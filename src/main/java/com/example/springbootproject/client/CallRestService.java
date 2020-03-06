@@ -1,12 +1,9 @@
 package com.example.springbootproject.client;
 
+import com.example.springbootproject.entity.googleapis.BookVolume;
+import com.example.springbootproject.entity.googleapis.IndustryIdentifiers;
 import org.springframework.boot.CommandLineRunner;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Component;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
 @Component
@@ -22,61 +19,58 @@ public class CallRestService implements CommandLineRunner {
         System.out.println("Page: " + employeeTotal.getPage());
         System.out.println("Per Page: " + employeeTotal.getPer_page());
         System.out.println("Total: " + employeeTotal.getTotal());
-        System.out.println("Total Pages: " + employeeTotal.getTotal_pages());
+        System.out.println("Total Pages: " + employeeTotal.getTotal_pages());*/
 
-        RestTemplate restTemplateById =  new RestTemplate();
-        EmployeeData employeeData = restTemplateById.getForObject("https://reqres.in/api/users/2", EmployeeData.class);
+        RestTemplate restTemplate = new RestTemplate();
+        BookVolume bookVolume = restTemplate.getForObject("https://www.googleapis.com/books/v1/volumes/xYotngEACAAJ", BookVolume.class);
 
-        System.out.println("Name of the employee is: " + employeeData.getEmployeeInfo().getFirst_name());
-        System.out.println("Avatar of the employee is: " + employeeData.getEmployeeInfo().getAvatar());
-        System.out.println("Employee infos are: " + employeeData.getEmployeeInfo().toString());
-*/
+        System.out.println("Kind is: " + bookVolume.getKind());
+        System.out.println("Id is: " + bookVolume.getId());
+        System.out.println("Self Link is: " + bookVolume.getSelfLink());
 
-        RestTemplate restTemplateByResponse =  new RestTemplate();
+        System.out.println("Title is: " + bookVolume.getVolumeInfo().getTitle());
+        System.out.println("Authors are: " + bookVolume.getVolumeInfo().getAuthors()[0]);
+        System.out.println("Publisher is: " + bookVolume.getVolumeInfo().getPublisher());
+        System.out.println("Published date is: " + bookVolume.getVolumeInfo().getPublishedDate());
+        System.out.println("Description is: " + bookVolume.getVolumeInfo().getDescription());
 
-        /*List<HttpMessageConverter<?>> messageConverters = new ArrayList<HttpMessageConverter<?>>();
-        MappingJackson2HttpMessageConverter converter = new MappingJackson2HttpMessageConverter();
-        converter.setSupportedMediaTypes(Collections.singletonList(MediaType.ALL));
-        messageConverters.add(converter);
-        restTemplateByResponse.setMessageConverters(messageConverters);*/
+        IndustryIdentifiers[] identifiers = bookVolume.getVolumeInfo().getIndustryIdentifiers();
 
-        /*List<HttpMessageConverter<?>> messageConverters = new ArrayList<HttpMessageConverter<?>>();
-        Jaxb2RootElementHttpMessageConverter converter = new Jaxb2RootElementHttpMessageConverter();
-        converter.setSupportedMediaTypes(Collections.singletonList(MediaType.ALL));
-        messageConverters.add(converter);
-        restTemplateByResponse.setMessageConverters(messageConverters);
-*/
-        /*MappingJackson2HttpMessageConverter mappingJackson2HttpMessageConverter =
-                new MappingJackson2HttpMessageConverter();
-        mappingJackson2HttpMessageConverter.setSupportedMediaTypes(
-                Arrays.asList(
-                        MediaType.APPLICATION_JSON,
-                        MediaType.APPLICATION_OCTET_STREAM));
-        restTemplateByResponse.getMessageConverters().add(mappingJackson2HttpMessageConverter);*/
+        for(IndustryIdentifiers identifier:identifiers){
+            System.out.println("Industry identifiers are: "
+                    + "Type is: " + identifier.getType()
+                    + " Identifier is: " + identifier.getIdentifier());
+        }
 
-       MultiValueMap<String, String> headers = new LinkedMultiValueMap<String, String>();
-        headers.add(HttpHeaders.USER_AGENT, "Mozilla/5.0");
-        headers.add(HttpHeaders.ACCEPT_LANGUAGE, "en-US,en;q=0.8");
-        headers.add(HttpHeaders.CONTENT_TYPE, "application/x-www-form-urlencoded");
-        HttpEntity<?> entity = new HttpEntity<Object>(headers);
-        HttpEntity<String> response = restTemplateByResponse.exchange("https://www.goodreads.com/author/list/18541?format=xml&key=WsCn5uVo7T5kMJNQqR8n3Q", HttpMethod.GET, entity, String.class);
+        System.out.println("Reading modes are: " + bookVolume.getVolumeInfo().getReadingModes().isText()
+                + " " + bookVolume.getVolumeInfo().getReadingModes().isImage());
 
 
-        /*ResponseClass responseClass =
-                restTemplateByResponse.getForObject("https://www.goodreads.com/author/list/18541?format=xml&key=WsCn5uVo7T5kMJNQqR8n3Q", ResponseClass.class);
+        System.out.println("Page count is: " + bookVolume.getVolumeInfo().getPageCount());
+        System.out.println("Printed Page count is: " + bookVolume.getVolumeInfo().getPrintedPageCount());
 
-        System.out.println("Authentication is: " + responseClass.getRequestClass().isAuthentication());
-        System.out.println("Key is: " + responseClass.getRequestClass().getKey());
-        System.out.println("Method is: " + responseClass.getRequestClass().getMethod());
+        System.out.println("Dimensions are: "
+                + bookVolume.getVolumeInfo().getDimensions().getHeight()
+                + " " + bookVolume.getVolumeInfo().getDimensions().getWidth()
+                + " " + bookVolume.getVolumeInfo().getDimensions().getThickness());
 
-        System.out.println("Author's id is: " + responseClass.getAuthor().getId());
-        System.out.println("Author's name is: " + responseClass.getAuthor().getName());
-        System.out.println("Author's link is: " + responseClass.getAuthor().getLink());*/
+        System.out.println("Categories are: " + bookVolume.getVolumeInfo().getCategories()[0]);
 
+        System.out.println("country: " + bookVolume.getAccessInfo().getCountry());
+        System.out.println("viewability: " + bookVolume.getAccessInfo().getViewability());
+        System.out.println("embeddable: " + bookVolume.getAccessInfo().isEmbeddable());
+        System.out.println("publicDomain: " + bookVolume.getAccessInfo().isPublicDomain());
+        System.out.println("textToSpeechPermission: " + bookVolume.getAccessInfo().getTextToSpeechPermission());
+        System.out.println("epub: " + bookVolume.getAccessInfo().getEpub().isAvailable());
+        System.out.println("pdf: " + bookVolume.getAccessInfo().getPdf().isAvailable());
+        System.out.println("webLinkReader: " + bookVolume.getAccessInfo().getWebLinkReader());
+        System.out.println("accessViewStatus: " + bookVolume.getAccessInfo().getAccessViewStatus());
+        System.out.println("quoteSharingAllowed: " + bookVolume.getAccessInfo().isQuoteSharingAllowed());
 
-        System.out.println("Books are: " + response.getBody());
 
     }
+
+
 
     @Override
     public void run(String... args) throws Exception {
